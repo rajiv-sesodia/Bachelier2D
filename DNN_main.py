@@ -1,6 +1,6 @@
 import numpy as np
 import pandas as pd
-from ActivationFunctions import Scale_MinMax, Scale_Standard
+from ActivationFunctions import Scaler
 from sklearn.model_selection import train_test_split
 from DNN_DL import NeuralNetwork
 from DNN_Helper import writeOutput
@@ -18,10 +18,11 @@ X, Y, dY = df.iloc[:, [0,1,2,3,4,5,6]].values, df.iloc[:, [7]].values, df.iloc[:
 X_train, X_test, Y_train, Y_test, dY_train, dY_test = train_test_split(X, Y, dY, test_size=0.2, shuffle = False, random_state=0)
 
 # scaling for X
-X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, scalerX, scalerY, c = Scale_MinMax(X_train, X_test, Y_train, Y_test, dY_train, dY_test)
+s = Scaler('MinMax')
+X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, scalerX, scalerY, c = s.Scale_MinMax(X_train, X_test, Y_train, Y_test, dY_train, dY_test)
 
 # Now create the basic structure of the Neural Network, essentially the number of nodes at each layer. Size of N is the number of layers
-N = np.array([7,20,20,1]) #number of nodes in each layer
+N = np.array([7,50,50,1]) #number of nodes in each layer
 
 # basic error checking on inputs. Should have more checks here I guess
 if N[N.shape[0]-1] != Y_train.shape[1]:
@@ -42,7 +43,7 @@ loss = []
 
 # we do the calculation in batches as it is more efficient
 batchSize = 50
-epochs = 420
+epochs = 500
 
 # optimiser - figure out how to do this nicely later
 optimiserType = 'Adam'
@@ -57,7 +58,7 @@ else:
     raise RuntimeError('Incorrect choice of optimiser')
 
 # fit the data
-NN.fit(optimiser, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, 'output_weights.csv', 'output_diagnostics.csv')
+NN.fit(optimiser, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, '','diagnostics.csv')
 
 # write the output to file
 writeOutput(X_train, X_train_, Y_train, Y_train_, dY_train, dY_train_, \
