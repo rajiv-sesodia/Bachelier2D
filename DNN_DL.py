@@ -150,23 +150,14 @@ class NeuralNetwork:
             error_a = self.feedForwardCheck(X[0])
             writeDiagnostics(error_w, error_b, error_a, self.w, self.b, loss, diagnosticsFile)
             
-            
-
-          
                 
-    def gradient(self, eta, X, Y, dY, stdscX, stdscY):
+    def gradient(self, eta, X, Y, dY, c):
         
         # derivative calculation
         z, a = self.feedForward(X)
         dcdz, dyda = self.calc_dcdz(a, z, Y, dY)   
-        derivatives = np.multiply(dyda[0], stdscY.data_range_ / stdscX.data_range_)
-       
-        # re-scale the output
-        # derivatives = np.divide(dyda[0], np.sqrt(stdscX.var_))
-        # if stdscY.with_std:
-        #     derivatives = np.multiply(derivatives, np.sqrt(stdscY.var_))
-    
-        
+        derivatives = np.divide(dyda[0], c)
+
         return derivatives
     
     

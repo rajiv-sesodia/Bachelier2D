@@ -97,13 +97,13 @@ def writeDiagnostics(error_w, error_b, error_a, w, b, loss, fileName):
     
 def writeOutput(X_train, X_train_std, Y_train, Y_train_std, dY_train, dY_train_std,\
                 X_test, X_test_std, Y_test, Y_test_std, dY_test, dY_test_std, \
-                stdscX, stdscY, NN, eta):
+                stdscX, stdscY, c, NN, eta):
 
     # check how well we fitted the training data 
     z_train, a_train = NN.feedForward(X_train_std)
     pv_train = stdscY.inverse_transform(a_train[NN.L-1])
     bperror = 10000*np.abs(pv_train-Y_train[:,[0]])
-    dyda_train = NN.gradient(eta, X_train_std, Y_train_std, dY_train_std, stdscX, stdscY)
+    dyda_train = NN.gradient(eta, X_train_std, Y_train_std, dY_train_std, c)
     delta1_train = np.zeros(X_train_std.shape[0])
     delta2_train = np.zeros(X_train_std.shape[0])
     vega1_train = np.zeros(X_train_std.shape[0])
@@ -128,7 +128,7 @@ def writeOutput(X_train, X_train_std, Y_train, Y_train_std, dY_train, dY_train_s
     z_test, a_test = NN.feedForward(X_test_std)
     pv_test = stdscY.inverse_transform(a_test[NN.L-1])
     bperror = 10000*np.abs(pv_test-Y_test[:,[0]])
-    dyda_test = NN.gradient(eta, X_test_std, Y_test_std, dY_test_std, stdscX, stdscY)
+    dyda_test = NN.gradient(eta, X_test_std, Y_test_std, dY_test_std, c)
     delta1_test = np.zeros(X_test_std.shape[0])
     delta2_test = np.zeros(X_test_std.shape[0])
     vega1_test = np.zeros(X_test_std.shape[0])

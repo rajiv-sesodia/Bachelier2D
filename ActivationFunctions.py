@@ -6,6 +6,45 @@ Created on Sun Jun  7 10:52:12 2020
 """
 
 import numpy as np
+from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import MinMaxScaler
+
+def Scale_MinMax(X_train, X_test, Y_train, Y_test, dY_train, dY_test):
+        
+    ScalerX = MinMaxScaler()
+    X_train_ = ScalerX.fit_transform(X_train)
+    X_test_ = ScalerX.transform(X_test)
+    
+    ScalerY = MinMaxScaler()
+    Y_train_ = ScalerY.fit_transform(Y_train)
+    Y_test_ = ScalerY.transform(Y_test)
+    
+    c = ScalerX.data_range_ / ScalerY.data_range_
+    d = [c[index] for index in [0,1,3,4,5]]
+    dY_train_ = dY_train * d
+    dY_test_ = dY_test * d
+        
+    
+    return X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, ScalerX, ScalerY, c
+        
+
+def Scale_Standard(X_train, X_test, Y_train, Y_test, dY_train, dY_test):
+        
+    ScalerX = StandardScaler()
+    X_train_ = ScalerX.fit_transform(X_train)
+    X_test_ = ScalerX.transform(X_test)
+    
+    ScalerY = StandardScaler()
+    Y_train_ = ScalerY.fit_transform(Y_train)
+    Y_test_ = ScalerY.transform(Y_test)
+    
+    c = np.sqrt(ScalerX.var_) / np.sqrt(ScalerY.var_)
+    d = [c[index] for index in [0,1,3,4,5]]
+    dY_train_ = dY_train * d
+    dY_test_ = dY_test * d
+            
+    return X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, ScalerX, ScalerY, c
+
 
 class ActivationFunctions:
     
