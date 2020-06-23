@@ -124,11 +124,16 @@ class NeuralNetwork:
      
     def fit(self, optimiser, L2, epochs, X, Y, dY, batchSize, loss, weightsAndBiasesFile='', diagnosticsFile=''):
         rgen = np.random.RandomState(1)
+
+        eta_x = [0.0,0.2,0.6,0.9,1.0]
+        eta_y = [1e-08, optimiser.eta, optimiser.eta * 0.5, optimiser.eta * 0.25, optimiser.eta * 0.125]
         
+
         for epoch in range(epochs):
             
             # shuffle
             r = rgen.permutation(len(Y))
+            optimiser.eta = np.interp(epoch / epochs, eta_x, eta_y)
 
             # loop over entire randomised set
             for n in range(0, len(Y) - batchSize + 1, batchSize):

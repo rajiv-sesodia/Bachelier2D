@@ -32,7 +32,7 @@ if X.shape[1] != N[0]:
     raise RuntimeError('First Layer must be equal to the number of inputs')
     
 # hyperparameters
-eta = 0.005
+eta = 0.1
 L2 = 0
 alpha = 1.0
 NN = NeuralNetwork(N, L2, alpha)
@@ -43,7 +43,7 @@ loss = []
 
 # we do the calculation in batches as it is more efficient
 batchSize = 50
-epochs = 500
+epochs = 200
 
 # optimiser - figure out how to do this nicely later
 optimiserType = 'Adam'
@@ -58,7 +58,7 @@ else:
     raise RuntimeError('Incorrect choice of optimiser')
 
 # fit the data
-NN.fit(optimiser, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, '','diagnostics.csv')
+NN.fit(optimiser, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, '','')
 
 # write the output to file
 writeOutput(X_train, X_train_, Y_train, Y_train_, dY_train, dY_train_, \
