@@ -46,7 +46,7 @@ dY_train_std = dY_train * d
 dY_test_std = dY_test * d
         
 # Now create the basic structure of the Neural Network, essentially the number of nodes at each layer. Size of N is the number of layers
-N = np.array([7,30,30,1]) #number of nodes in each layer
+N = np.array([7,50,50,1]) #number of nodes in each layer
 
 # basic error checking on inputs. Should have more checks here I guess
 if N[N.shape[0]-1] != Y_train.shape[1]:
