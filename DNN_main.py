@@ -4,11 +4,11 @@ from ActivationFunctions import Scaler
 from sklearn.model_selection import train_test_split
 from DNN_DL import NeuralNetwork
 from DNN_Helper import writeOutput
-from DNN_Optimiser import SGD, Adam, Momentum
+
 
 
 # data - you;ll have to change this path of course depending on where you put your data
-df = pd.read_excel("C:/Users/Rajiv/Google Drive/Science/Python/sandbox/DNN/Regression/Bachelier2D/Generator2D.xlsx",usecols="S:AE")
+df = pd.read_excel("C:/Users/Rajiv/Google Drive/Science/Python/sandbox/DNN/Regression/Bachelier2D/Generator2D_Put.xlsx",usecols="S:AE")
 
 #extract the training sample
 X, Y, dY = df.iloc[:, [0,1,2,3,4,5,6]].values, df.iloc[:, [7]].values, df.iloc[:, [8,9,10,11,12]].values
@@ -18,7 +18,7 @@ X, Y, dY = df.iloc[:, [0,1,2,3,4,5,6]].values, df.iloc[:, [7]].values, df.iloc[:
 X_train, X_test, Y_train, Y_test, dY_train, dY_test = train_test_split(X, Y, dY, test_size=0.2, shuffle = False, random_state=0)
 
 # scaling for X
-s = Scaler('MinMax')
+s = Scaler('Standard')
 X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, scalerX, scalerY, c = s.Scale_MinMax(X_train, X_test, Y_train, Y_test, dY_train, dY_test)
 
 # Now create the basic structure of the Neural Network, essentially the number of nodes at each layer. Size of N is the number of layers
@@ -34,31 +34,19 @@ if X.shape[1] != N[0]:
 # hyperparameters
 eta = 0.1
 L2 = 0
-alpha = 1.0
-NN = NeuralNetwork(N, L2, alpha)
-NN.initialise('')
+alpha = 1
 
-# loss is a vector showing how the loss varies with each iteration of the algorithm (epoch)
-loss = []
+# build class
+NN = NeuralNetwork(N, L2, 'softplus', alpha)
+NN.initialise('')
 
 # we do the calculation in batches as it is more efficient
 batchSize = 50
 epochs = 200
-
-# optimiser - figure out how to do this nicely later
-optimiserType = 'Adam'
-optimiser = 0
-if optimiserType == 'SGD':
-    optimiser = SGD(eta)
-elif optimiserType == 'Adam':
-    optimiser = Adam(NN.L, eta, 1e-08, 0.9, 0.999)
-elif optimiserType == 'Momentum':
-    optimiser = Momentum(NN.L, eta, 0.9)
-else:
-    raise RuntimeError('Incorrect choice of optimiser')
+loss = []
 
 # fit the data
-NN.fit(optimiser, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, '','')
+NN.fit('Adam', eta, L2, epochs, X_train_, Y_train_, dY_train_, batchSize, loss, '','')
 
 # write the output to file
 writeOutput(X_train, X_train_, Y_train, Y_train_, dY_train, dY_train_, \

@@ -33,7 +33,7 @@ class Scaler:
         return X_train_, X_test_, Y_train_, Y_test_, dY_train_, dY_test_, ScalerX, ScalerY, c
             
     
-    def Scale_Standard(X_train, X_test, Y_train, Y_test, dY_train, dY_test):
+    def Scale_Standard(self, X_train, X_test, Y_train, Y_test, dY_train, dY_test):
             
         ScalerX = StandardScaler()
         X_train_ = ScalerX.fit_transform(X_train)

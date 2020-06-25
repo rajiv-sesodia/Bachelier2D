@@ -12,16 +12,17 @@ TO DO: add a regularisation function to the weights
 import numpy as np
 from ActivationFunctions import ActivationFunctions
 from DNN_Helper import readWeightsAndBiases, writeWeightsAndBiases, writeDiagnostics
+from DNN_Optimiser import SGD, Adam, Momentum
 
 # One of my first Neural Networks
 class NeuralNetwork:
     
-    def __init__(self, N, L2 = 0, alpha = 0.01):
+    def __init__(self, N, L2 = 0, afType = 'elu', alpha = 0.01):
         # L is the number of layers in the neural network
         # N is an array containing the number of nodes in each layer
         self.L = N.shape[0]
         self.N = N
-        self.af = ActivationFunctions('softplus', alpha)
+        self.af = ActivationFunctions(afType, alpha)
         self.phi = self.af.phi 
         self.dphi = self.af.dphi
         self.d2phi = self.af.d2phi
@@ -122,18 +123,30 @@ class NeuralNetwork:
         return loss1, loss2
     
      
-    def fit(self, optimiser, L2, epochs, X, Y, dY, batchSize, loss, weightsAndBiasesFile='', diagnosticsFile=''):
+    def fit(self, optimiserType, eta, L2, epochs, X, Y, dY, batchSize, loss, weightsAndBiasesFile='', diagnosticsFile=''):
         rgen = np.random.RandomState(1)
 
-        eta_x = [0.0,0.2,0.6,0.9,1.0]
-        eta_y = [1e-08, optimiser.eta, optimiser.eta * 0.5, optimiser.eta * 0.25, optimiser.eta * 0.125]
+        # learning schedule
+        eta_x = [0.0,0.2,0.3,0.8,1.0]
+        eta_y = [1e-08,1,0.5,0.25,0.125]
+        
+        # optimiser
+        optimiser = 0
+        if optimiserType == 'SGD':
+            optimiser = SGD(eta)
+        elif optimiserType == 'Adam':
+            optimiser = Adam(self.L, eta, 1e-08, 0.9, 0.999)
+        elif optimiserType == 'Momentum':
+            optimiser = Momentum(self.L, eta, 0.9)
+        else:
+            raise RuntimeError('Incorrect choice of optimiser')
         
 
         for epoch in range(epochs):
             
             # shuffle
             r = rgen.permutation(len(Y))
-            optimiser.eta = np.interp(epoch / epochs, eta_x, eta_y)
+            optimiser.eta = np.interp(epoch / epochs, eta_x, eta_y) * eta
 
             # loop over entire randomised set
             for n in range(0, len(Y) - batchSize + 1, batchSize):
